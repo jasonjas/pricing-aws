@@ -1,7 +1,7 @@
 import pandas as pd
 import search_skus
 
-doc = pd.read_excel("C:\\temp\\test.xlsx", keep_default_na=False)
+doc = pd.read_excel("test.xlsx", keep_default_na=False)
 doc.rename(columns=lambda s: s.lower(), inplace=True)
 print(doc)
 
@@ -19,7 +19,7 @@ for index, name in doc.iterrows():
 
 print(all_costs)
 
-doc['cost'] = all_costs
+# doc['cost'] = all_costs
 
-# output to excel
-doc.to_excel('a.xlsx', sheet_name='hello')
+# # output to excel
+# doc.to_excel('a.xlsx', sheet_name='hello')
