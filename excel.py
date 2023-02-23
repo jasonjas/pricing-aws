@@ -12,7 +12,7 @@ all_costs = {}
 # iterate the rows and update cost
 for index, name in doc.iterrows():
     attrs = name.to_dict()
-    ## need to get the headin
+    ## need to get the heading
     cost = sku.search_skus(database='products', attributes=attrs)
     all_costs[index] = cost
 # print(doc)
