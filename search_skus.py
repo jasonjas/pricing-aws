@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Optional, Set, Type
 import logging
 import query_db
+import defaults
 from constants import (
     REGION_SHORTS,
     RESOURCE_TYPES_MAPPING
@@ -15,24 +16,12 @@ ch.setLevel(logging.DEBUG)
 logger.addHandler(ch)
 
 
-def implements(offer_name):
-    """Decorator to keep track of offer-specific class implementations."""
-    def wrapper(cls):
-        OFFER_CLASS_MAP[offer_name] = cls
-        return cls
-    return wrapper
-
-
-def get_offer_class(offer_name):  # type: (str) -> Type[main]
-    return OFFER_CLASS_MAP.get(offer_name, main)
-
-
 class main:
     def __init__(self) -> None:
         self.default_region = 'us-east-1'
-        self.default_resource_type = 'vm'
+        self.default_resource_type = 'ec2'
 
-    # type: (str, Dict[str, str]) -> Set[str]
+    # type: (str, str, Dict[str, str]) -> Set[str]
     def search_skus(self, database, attributes):
         """Search for all SKUs matching the given attributes.
 
@@ -43,11 +32,25 @@ class main:
         :return: a set of matching SKUs
         """
         attributes = self._pythonify_attributes(attributes)
-        query = query_db.build_query(database, attributes, 'sku')
-        print(query)
+        all_attrs = self.check_defaults(attributes)
+        query = query_db.build_query(database, all_attrs, 'sku')
+        # print(query)
         # col_names = query_db.get_column_names(database)
         result = query_db.query_products(query)
         return result
+
+
+    def check_defaults(self, attributes): # type: (Dict[str, str]) -> Dict[str, str]
+        default_attrs = {}
+        if 'productFamily' in attributes.keys():
+            productFamily = self._normalize_resource_type(attributes['productFamily'])
+            # in a very complicated way, get the original type from the resource_types_Mapping dictionary
+            type = list(RESOURCE_TYPES_MAPPING.keys())[list(RESOURCE_TYPES_MAPPING.values()).index(productFamily)]
+            default_attrs = defaults.get_defaults(f'{type}_default_attributes')()
+        for i in default_attrs.keys():
+            if i not in attributes.keys():
+                attributes[i] = default_attrs[i]
+        return attributes
 
     def _pythonify_attributes(self, attributes):
         # type: (Dict[str, str]) -> Dict[str, str]
@@ -60,7 +63,7 @@ class main:
                 attr_value = self._normalize_resource_type(attr_value)
             elif attr_name == 'region':
                 attr_name = f'{prefix}regionCode'
-            elif attr_name != "index" and attr_name != "sku" and attr_name != "productFamily":
+            elif attr_name != "index" and attr_name != "sku" and attr_name != "productfamily":
                 # add 'attributes_' before the column name
                 attr_name = f'{prefix}{attr_name}'
                 attr_name = attr_name[0].lower() + attr_name[1:]
@@ -93,6 +96,3 @@ class main:
         # Loop through attributes and verify required ones exist.
         # If not in attributes, add them
         defaults = get_offer_class(product_family)
-        
-
-

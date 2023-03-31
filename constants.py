@@ -97,9 +97,12 @@ SNAPSHOT_USAGE_TYPE = Enum(
     usage_under_billing='EBS:SnapshotUsageUnderBilling'
 )
 
+# these values match up with the 'productfamily' value
 RESOURCE_TYPES_MAPPING = {
-    'vm': 'Compute Instance',
-    'rds': 'Database Instance'
+    'ec2': 'Compute Instance',
+    'rds': 'Database Instance',
+    'ebs': 'Storage',
+    'snapshot': 'Storage Snapshot'
 }
 
 DATABASE_FILE_NAME = 'products.db'
