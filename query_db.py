@@ -44,7 +44,8 @@ def populate_database(table_name, json_index, src_file_path='index-full.json', d
     prods.to_sql(table_name, con)
 
 
-def build_query(table, values, columns='*'): # type: (str, Dict[str, str], str) -> str
+# type: (str, Dict[str, str], str) -> str
+def build_query(table, values, columns='*'):
     """Create the query string used to query the database
 
     args:
@@ -65,7 +66,7 @@ def build_query(table, values, columns='*'): # type: (str, Dict[str, str], str) 
     return query_string
 
 
-def query_products(query_string): # type: (str) -> any
+def query_products(query_string):  # type: (str) -> any
     """Query database using the query string provided
 
     args:
@@ -80,7 +81,7 @@ def query_products(query_string): # type: (str) -> any
     return results
 
 
-def get_column_names(table_name): # type: (str) -> list
+def get_column_names(table_name):  # type: (str) -> list
     """Retrieve the column names in the specified table
 
     args:
@@ -95,7 +96,7 @@ def get_column_names(table_name): # type: (str) -> list
     return col_names
 
 
-def _create_connection(db_file=DATABASE_FILE_NAME): # type: (str) -> sqlite3.Cursor
+def _create_connection(db_file=DATABASE_FILE_NAME):  # type: (str) -> sqlite3.Cursor
     """Create a sqlite connection to a database file
 
     args:
@@ -108,7 +109,8 @@ def _create_connection(db_file=DATABASE_FILE_NAME): # type: (str) -> sqlite3.Cur
     return cur
 
 
-def get_table_info(db_file=DATABASE_FILE_NAME, table_name='products'): # type (str, str) -> sqlite3.Cursor
+# type (str, str) -> sqlite3.Cursor
+def get_table_info(db_file=DATABASE_FILE_NAME, table_name='products'):
     """Get sqlite pragma table info in the database
 
     args:
