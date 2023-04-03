@@ -25,11 +25,11 @@ class main:
     def search_skus(self, database, attributes):
         """Search for all SKUs matching the given attributes.
 
-        Note that attributes given in pythonic snake_case notation will
-        automatically be converted to camelCase to match AWS pricing data
-        convention.
+        args:
+            database: name of database file containing the data to search
+            attributes: dictionary of attributes to search for
 
-        :return: a set of matching SKUs
+        return: a set of matching SKUs
         """
         attributes = self._pythonify_attributes(attributes)
         all_attrs = self.check_defaults(attributes)
@@ -41,6 +41,10 @@ class main:
 
 
     def check_defaults(self, attributes): # type: (Dict[str, str]) -> Dict[str, str]
+        """Check defined attributes and add any default attributes that are required but do not exist in the request
+
+        return: Dictionary of attributes and their values
+        """
         default_attrs = {}
         if 'productFamily' in attributes.keys():
             productFamily = self._normalize_resource_type(attributes['productFamily'])
@@ -54,6 +58,10 @@ class main:
 
     def _pythonify_attributes(self, attributes):
         # type: (Dict[str, str]) -> Dict[str, str]
+        """Return attributes to match what is loaded/created in the database
+
+        return: Dictionary of attributes and their values
+        """
         result = {}
         prefix = 'attributes_'
         for attr_name in attributes:
@@ -72,6 +80,12 @@ class main:
         return result
 
     def _normalize_region(self, region):  # type: (Optional[str]) -> str
+        """Gets the long name of the region used in the pricing API 
+
+        This is utilized to make it more user-friendly for input data        
+
+        return: Long name to match the pricing API index data
+        """
         region = region or self.default_region
         if not region:
             raise ValueError("No region is set.")
@@ -82,6 +96,12 @@ class main:
 
     # type: (Optional[str]) -> str
     def _normalize_resource_type(self, type: str):
+        """Gets the correct product family name used in the pricing API index data
+
+        This is utilized to make it more user-friendly for input data
+
+        return: the product family name used in the pricing API index data
+        """
         type = type or self.default_resource_type
 
         if not type:
@@ -90,9 +110,3 @@ class main:
         if type in RESOURCE_TYPES_MAPPING:  # Use product family to match pricing API
             type = RESOURCE_TYPES_MAPPING[type]
         return type
-
-    # type: (str, Dict[str, str]) -> Dict[str, str]
-    def verify_attributes(self, product_family, attributes):
-        # Loop through attributes and verify required ones exist.
-        # If not in attributes, add them
-        defaults = get_offer_class(product_family)
