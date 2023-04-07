@@ -41,7 +41,46 @@ def populate_database(table_name, json_index, src_file_path='index-full.json', d
     prods.rename(columns=lambda s: s.lower().replace(
         'attributes.', 'attributes_'), inplace=True)
     con = sqlite3.connect(dest_file_path)
-    prods.to_sql(table_name, con)
+    prods.to_sql(table_name, con, if_exists='replace')
+    con.close()
+
+
+def descend_json(x, depth):
+    # type (Dict, int) -> any
+    """Iterate through a dict-like object and return the data specified in the depth value
+    """
+    for i in range(depth):
+        x = next(iter(x.values()))
+
+    return x
+
+
+# type: (str, str, str, str) -> None
+def populate_terms_db(table_name, json_index='terms', src_file_path='index-full.json', dest_file_path='terms.db'):
+    """Create database from pricing API index data
+
+    args:
+        table_name: name of table to create in the db file
+        json_index: top-level index of json to output, ex. 'products' or 'terms'
+        src_file_path: relative or full file path to source index json file
+        dest_file_path: relative or full file path to database that is wanted to be created/replaced
+
+    return: saves the output to a database file on the filesystem
+    """
+    table_data = {}
+    jsonfile = pd.read_json(src_file_path)  # , orient='index'
+    odterms = jsonfile[json_index]['OnDemand']
+
+    for sku in odterms:
+        data = descend_json(odterms[sku], 1)
+        price_data = descend_json(data['priceDimensions'], 1)
+        table_data[sku] = {'sku': sku, 'description': price_data['description'],
+                           'unit': price_data['unit'], 'cost': price_data['pricePerUnit']['USD']}
+    # t_to_j = json.loads(json.dumps(table_data))
+    jn = pd.json_normalize(table_data.values())
+    con = sqlite3.connect(dest_file_path)
+    jn.to_sql(table_name, con, if_exists='replace')
+    con.close()
 
 
 # type: (str, Dict[str, str], str) -> str
