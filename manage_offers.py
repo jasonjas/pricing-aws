@@ -79,17 +79,18 @@ def _fetch_offer(offer_name, region=None, version='current'):
             f.write(chunk)
 
 
-for offer in AVAILABLE_OFFERS_MAP:
-    print(f'Retrieving offer {offer}')
-    _fetch_offer(offer)
+def create_update_databases():
+    for offer in AVAILABLE_OFFERS_MAP:
+        print(f'Retrieving offer {offer}')
+        _fetch_offer(offer)
 
-offer_files = os.listdir(offer_dir)
-for of in offer_files:
-    if not of.endswith('.json'):
-        continue
-    service = of.split('_')[0]
-    file_path = os.path.join(offer_dir, of)
-    print(f'populating products for {of}')
-    populate_products_database(service, src_file_path=file_path, dest_file_path='products.db')
-    print(f'populating terms for {of}')
-    populate_terms_db(service, src_file_path=file_path, dest_file_path='terms.db')
+    offer_files = os.listdir(offer_dir)
+    for of in offer_files:
+        if not of.endswith('.json'):
+            continue
+        service = of.split('_')[0]
+        file_path = os.path.join(offer_dir, of)
+        print(f'populating products for {of}')
+        populate_products_database(service, src_file_path=file_path, dest_file_path='products.db')
+        print(f'populating terms for {of}')
+        populate_terms_db(service, src_file_path=file_path, dest_file_path='terms.db')
