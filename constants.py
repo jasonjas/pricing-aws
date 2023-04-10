@@ -1,5 +1,5 @@
 from typing import Dict  # noqa
-
+import os
 
 class Enum(object):
     """Very simple string enumeration implementation.
@@ -128,8 +128,9 @@ SNAPSHOT_USAGE_TYPE = Enum(
     usage_under_billing='EBS:SnapshotUsageUnderBilling'
 )
 
-PRODUCTS_DATABASE_FILE_NAME = 'products.db'
-TERMS_DATABASE_FILE_NAME = 'terms.db'
+script_dir = os.path.dirname(__file__)
+PRODUCTS_DATABASE_FILE_NAME = os.path.join(script_dir, 'products.db')
+TERMS_DATABASE_FILE_NAME = os.path.join(script_dir, 'terms.db')
 
 HOURS_IN_YEAR = 24 * 365
 HOURS_IN_MONTH = HOURS_IN_YEAR / 12
