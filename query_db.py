@@ -1,28 +1,10 @@
 import sqlite3
 import pandas as pd
 from typing import Dict
-from constants import DATABASE_FILE_NAME
+from constants import PRODUCTS_DATABASE_FILE_NAME
 
-###
-# Get information to query and build the query here
-###
-
-# build query
-# take in stuff
-
-# con = sqlite3.connect("products.db")
-# cur = con.cursor()
-# res = cur.execute("SELECT * from products WHERE sku == 'DSF55NK4A6B6FWMD'")
-#         # "SELECT attributes_group,sku from products WHERE attributes_group != ''")
-#         #"SELECT * FROM products WHERE attributes_location == 'US East (N. Virginia)' AND attributes_instanceType == 'r5d.12xlarge'"):
-
-# for i in res.fetchall():
-#     print(i)
-# cur.close()
-
-
-# type: (str, str, str, str) -> None
-def populate_database(table_name, json_index, src_file_path='index-full.json', dest_file_path='data.db'):
+def populate_products_database(table_name, json_index='products', src_file_path='index-full.json', dest_file_path='products.db'):
+    # type: (str, str, str, str) -> None
     """Create database from pricing API index data
 
     args:
@@ -55,8 +37,8 @@ def descend_json(x, depth):
     return x
 
 
-# type: (str, str, str, str) -> None
 def populate_terms_db(table_name, json_index='terms', src_file_path='index-full.json', dest_file_path='terms.db'):
+    # type: (str, str, str, str) -> None
     """Create database from pricing API index data
 
     args:
@@ -83,8 +65,8 @@ def populate_terms_db(table_name, json_index='terms', src_file_path='index-full.
     con.close()
 
 
-# type: (str, Dict[str, str], str) -> str
 def build_query(table, values, columns='*'):
+    # type: (str, Dict[str, str], str) -> str
     """Create the query string used to query the database
 
     args:
@@ -97,6 +79,9 @@ def build_query(table, values, columns='*'):
     db_string = f"SELECT {columns} FROM {table}"
     where_clause_values = ''
     for col in values:
+        # leave out any fields left intentionally null
+        if values[col] == '':
+            continue
         if where_clause_values != '':
             where_clause_values += " AND "
         where_clause_values += f"{col} == '{values[col]}'"
@@ -105,7 +90,7 @@ def build_query(table, values, columns='*'):
     return query_string
 
 
-def query_products(query_string):  # type: (str) -> any
+def query_db(query_string, db_file_name):  # type: (str, str) -> tuple
     """Query database using the query string provided
 
     args:
@@ -113,11 +98,11 @@ def query_products(query_string):  # type: (str) -> any
 
     return: results of the query
     """
-    cur = _create_connection()
+    cur = _create_connection(db_file=db_file_name)
     query_results = cur.execute(query_string)
     results = query_results.fetchall()
     cur.close()
-    return results
+    return results[0]
 
 
 def get_column_names(table_name):  # type: (str) -> list
@@ -135,7 +120,7 @@ def get_column_names(table_name):  # type: (str) -> list
     return col_names
 
 
-def _create_connection(db_file=DATABASE_FILE_NAME):  # type: (str) -> sqlite3.Cursor
+def _create_connection(db_file):  # type: (str) -> sqlite3.Cursor
     """Create a sqlite connection to a database file
 
     args:
@@ -148,8 +133,8 @@ def _create_connection(db_file=DATABASE_FILE_NAME):  # type: (str) -> sqlite3.Cu
     return cur
 
 
-# type (str, str) -> sqlite3.Cursor
-def get_table_info(db_file=DATABASE_FILE_NAME, table_name='products'):
+def get_table_info(db_file, table_name='products'):
+    # type (str, str) -> sqlite3.Cursor
     """Get sqlite pragma table info in the database
 
     args:
@@ -161,3 +146,6 @@ def get_table_info(db_file=DATABASE_FILE_NAME, table_name='products'):
     tables = cur.execute(f"PRAGMA table_info({table_name});")
     cur.close()
     return tables
+
+# populate_products_database('ec2', dest_file_path='products.db')
+# populate_terms_db('ec2')

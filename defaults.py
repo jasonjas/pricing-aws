@@ -29,3 +29,25 @@ def ec2_default_attributes(): # type: () -> Dict[str,str]
         'attributes_capacitystatus': 'Used',
         'attributes_marketoption': 'OnDemand'
     }
+
+@implements("ebs_default_attributes")
+def ebs_default_attributes(): # type: () -> Dict[str,str]
+    return {
+        'attributes_volumeapiname': 'gp3'
+    }
+
+@implements("s3_default_attributes")
+def s3_default_attributes(): # type: () -> Dict[str,str]
+    return {
+        'attributes_storageclass': 'General Purpose'
+    }
+
+@implements("rds_default_attributes")
+def rds_default_attributes(): # type: () -> Dict[str,str]
+    return {
+        'attributes_instancetype': 'db.r5.4xlarge',
+        'attributes_databaseengine': 'SQL Server',
+        'attributes_licensemodel': 'License included',
+        'attributes_deploymentoption': 'Single-AZ',
+        'attributes_databaseedition': 'Standard',
+    }

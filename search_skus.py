@@ -4,7 +4,10 @@ import query_db
 import defaults
 from constants import (
     REGION_SHORTS,
-    RESOURCE_TYPES_MAPPING
+    RESOURCE_TYPES_MAPPING,
+    PRODUCTS_DATABASE_FILE_NAME,
+    TERMS_DATABASE_FILE_NAME,
+    DB_NAME_MAPPING
 )
 
 OFFER_CLASS_MAP = {}
@@ -22,8 +25,8 @@ class main:
         self.default_resource_type = 'ec2'
 
     # type: (str, str, Dict[str, str]) -> Set[str]
-    def search_skus(self, database, attributes):
-        """Search for all SKUs matching the given attributes.
+    def search_products(self, database, attributes):
+        """Search for all products matching the given attributes.
 
         args:
             database: name of database file containing the data to search
@@ -34,10 +37,31 @@ class main:
         attributes = self._pythonify_attributes(attributes)
         all_attrs = self.check_defaults(attributes)
         query = query_db.build_query(database, all_attrs, 'sku')
-        # print(query)
-        # col_names = query_db.get_column_names(database)
-        result = query_db.query_products(query)
+        result = query_db.query_db(query, db_file_name=PRODUCTS_DATABASE_FILE_NAME)
         return result
+    
+
+    # type: (str, str, str, Dict[str, str]) -> Set[str]
+    def get_pricing(self, attributes):
+        """Search for all SKUs matching the given attributes.
+
+        args:
+            database: name of database file containing the data to search
+            attributes: dictionary of attributes to search for
+
+        return: pricing information
+        """
+        terms_attrs = {}
+        database_name = DB_NAME_MAPPING[attributes['type']]
+        attributes = self._pythonify_attributes(attributes)
+        all_attrs = self.check_defaults(attributes)
+        sku = self.search_products(database_name, all_attrs)
+        if len(sku) != 1:
+            raise ValueError(f"Only 1 sku can be used to query the DB, received {len(sku)}")
+        terms_attrs['sku'] = sku[0]
+        query = query_db.build_query(database_name, terms_attrs, 'cost')
+        result = query_db.query_db(query, db_file_name=TERMS_DATABASE_FILE_NAME)
+        return result[0]
 
 
     def check_defaults(self, attributes): # type: (Dict[str, str]) -> Dict[str, str]
@@ -46,8 +70,8 @@ class main:
         return: Dictionary of attributes and their values
         """
         default_attrs = {}
-        if 'productFamily' in attributes.keys():
-            productFamily = self._normalize_resource_type(attributes['productFamily'])
+        if 'productfamily' in attributes.keys():
+            productFamily = self._normalize_resource_type(attributes['productfamily'])
             # in a very complicated way, get the original type from the resource_types_Mapping dictionary
             type = list(RESOURCE_TYPES_MAPPING.keys())[list(RESOURCE_TYPES_MAPPING.values()).index(productFamily)]
             default_attrs = defaults.get_defaults(f'{type}_default_attributes')()
@@ -67,10 +91,12 @@ class main:
         for attr_name in attributes:
             attr_value = attributes[attr_name]
             if attr_name == 'type':
-                attr_name = 'productFamily'
+                attr_name = 'productfamily'
                 attr_value = self._normalize_resource_type(attr_value)
             elif attr_name == 'region':
                 attr_name = f'{prefix}regionCode'
+            elif attr_name.startswith(prefix):
+                attr_name = attr_name.lower()
             elif attr_name != "index" and attr_name != "sku" and attr_name != "productfamily":
                 # add 'attributes_' before the column name
                 attr_name = f'{prefix}{attr_name}'

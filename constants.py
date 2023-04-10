@@ -32,6 +32,37 @@ class Enum(object):
 OFFER_BASE_URL = 'https://pricing.us-east-1.amazonaws.com'
 OFFER_INDEX_ENDPOINT = '/offers/v1.0/aws/index.json'
 
+AVAILABLE_OFFERS_MAP = {
+    'AmazonS3': 's3',
+    'AmazonEC2': 'ec2',
+    'AmazonRDS': 'rds',
+    'AWSLambda': 'lambda',
+    'AmazonVPC': 'vpc'
+}
+
+# these values match up with the 'productfamily' value
+RESOURCE_TYPES_MAPPING = {
+    'ec2': 'Compute Instance',
+    'rds': 'Database Instance',
+    'rds-data': 'Database Storage',
+    'ebs': 'Storage',
+    'snapshot': 'Storage Snapshot',
+    's3': 'Storage',
+    'vpc': 'AmazonVPC',
+    'lambda': 'Serverless'
+}
+
+DB_NAME_MAPPING = {
+    'ec2': 'ec2',
+    'rds': 'rds',
+    'rds-data': 'rds',
+    'ebs': 'ec2',
+    'snapshot': 'ec2',
+    's3': 's3',
+    'vpc': 'vpc',
+    'lambda': 'lambda'
+}
+
 # noqa - Taken from: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
 REGION_SHORTS = {
     'us-east-1': 'US East (N. Virginia)',
@@ -97,14 +128,8 @@ SNAPSHOT_USAGE_TYPE = Enum(
     usage_under_billing='EBS:SnapshotUsageUnderBilling'
 )
 
-# these values match up with the 'productfamily' value
-RESOURCE_TYPES_MAPPING = {
-    'ec2': 'Compute Instance',
-    'rds': 'Database Instance',
-    'ebs': 'Storage',
-    'snapshot': 'Storage Snapshot'
-}
-
-DATABASE_FILE_NAME = 'products.db'
+PRODUCTS_DATABASE_FILE_NAME = 'products.db'
+TERMS_DATABASE_FILE_NAME = 'terms.db'
 
 HOURS_IN_YEAR = 24 * 365
+HOURS_IN_MONTH = HOURS_IN_YEAR / 12
