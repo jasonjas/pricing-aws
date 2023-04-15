@@ -1,22 +1,16 @@
-# AWS Pricing
-Get pricing for AWS resources from resources defined in an Excel spreadsheet
+# pricing-aws
+Get pricing for some AWS services by processing an Excel file containing the resources you want to create.
 
-## example
-    import pricing-aws
+Uses the AWS pricing API to populate local databases.
 
-    ec2_offer = awspricing.offer('AmazonEC2')
+## Django
+Run the following commands to populate the django database
 
-    ec2_offer.search_skus(
-      instance_type='c4.large',
-      location='US East (N. Virginia)',
-      operating_system='Linux',
-    )  # {'4C7N4APU9GEUZ6H6', 'MBQPYDJSY3BY84BH', 'MDKVAJXMJGZFDJUE'}
+```
+python manage.py migrate --run-syncdb
+python manage.py makemigrations website
+python manage.py migrate website
+```
 
-    ec2_offer.reserved_hourly(
-      'c4.xlarge',
-      operating_system='Linux',
-      lease_contract_length='3yr',
-      offering_class='convertible',
-      purchase_option='Partial Upfront',
-      region='us-east-1'
-    )  # 0.10845205479452055
+Run the following command to start Django
+`pyt .\manage.py runserver`
