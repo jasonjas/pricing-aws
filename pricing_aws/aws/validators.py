@@ -11,11 +11,6 @@ def validate_file_extension(value):
         raise ValidationError('Unsupported file extension.')
 
 
-def is_xslx(filename):
-    with open(filename, 'rb') as f:
-        first_four_bytes = f.read(4)
-
-
 def isExcelDoc(file):
     excelSigs = [
         ('xlsx', b'\x50\x4B\x05\x06', 2, -22, 4),
@@ -26,18 +21,8 @@ def isExcelDoc(file):
          0, 2048, 8)  # Saved from Excel then saved from Calc
     ]
 
-    if type(file) == uploadedfile.InMemoryUploadedFile:
-        for sigType, sig, whence, offset, size in excelSigs:
-            file.open().seek(offset, whence)
-            bytes = file.read(size)
-            if bytes == sig:
-                return True
-
     if type(file) == uploadedfile.TemporaryUploadedFile:
         data = file.temporary_file_path()
-        # with open(os.path.join('c:\\', 'temp', 'test.txt'), 'w') as w:
-        #     w.writelines(file.chunks())
-        # uploadedfile.InMemoryUploadedFile.open(mode=)
 
         for sigType, sig, whence, offset, size in excelSigs:
             with open(data, 'rb') as f:
@@ -46,5 +31,7 @@ def isExcelDoc(file):
 
                 if bytes == sig:
                     return True
+    else:
+        raise ValidationError('Unable to read file on server')
 
-    raise ValidationError('Unsupported file type.')
+    raise ValidationError('Unsupported file type!')

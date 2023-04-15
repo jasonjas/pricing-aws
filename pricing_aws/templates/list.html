@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Minimal Django File Upload Example</title>
+        <title>Get AWS Pricing</title>
     </head>
 
     <body>
@@ -22,12 +22,13 @@
         <form action="{% url "process-file" %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ message }}
-            <p>{{ form.non_field_errors }}</p>
+            <p>{{ form.non_field_errors }}
+            {{ form.docfile.errors }}
+            </p>
 
             <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
 
             <p>
-                {{ form.docfile.errors }}
                 {{ form.docfile }}
             </p>
 
