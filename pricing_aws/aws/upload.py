@@ -33,7 +33,10 @@ class PurgeStaleDocuments():
     Purge all files on the server and the database records pointing to them
     """
 
-    def purge_docs(password):
+    def purge_docs(password_file=f'{settings.BASE_DIR}/pw.txt'):
+        with open(password_file, 'r') as pwf:
+            password = pwf.read()
+
         if settings.PURGE_PASSWORD == password:
             try:
                 objects = handle_uploaded_file.objects.all()

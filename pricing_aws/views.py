@@ -1,8 +1,9 @@
 from django.http import StreamingHttpResponse
+from django.utils.crypto import get_random_string
 from django.shortcuts import render
 from pricing_aws.aws.upload import UploadFileForm, handle_uploaded_file, PurgeDocumentsForm, PurgeStaleDocuments
 import os
-from website.settings import MEDIA_ROOT, PURGE_PASSWORD
+from website.settings import MEDIA_ROOT, BASE_DIR
 from pricing_aws.aws import process_excel_file
 from rest_framework.views import APIView
 import os
@@ -62,3 +63,13 @@ class PurgeDocuments(APIView):
         documents = handle_uploaded_file.objects.all()
         context = {'documents': documents, 'form': form, 'message': message}
         return render(request, 'purge.html', context)
+
+class GenPassword(APIView):
+    
+    def get(self, file_location=f'{BASE_DIR}/pw.txt'):
+        pw = get_random_string(length=12)
+        with open(file_location, 'w') as flw:
+            flw.write(pw)
+        
+
+    

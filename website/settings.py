@@ -19,7 +19,6 @@ APP_DIR = Path(__file__).resolve().parent
 BASE_DIR = APP_DIR.parent
 MEDIA_ROOT = f'{BASE_DIR}/files'
 FILES_DIRECTORY = "test"
-PURGE_PASSWORD = "ck90LkpK2b9R0agiKd4z"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
