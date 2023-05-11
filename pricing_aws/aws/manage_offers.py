@@ -1,11 +1,11 @@
 from pathlib import PurePosixPath
 import requests
 from requests.adapters import HTTPAdapter
-from constants import OFFER_BASE_URL, OFFER_INDEX_ENDPOINT, AVAILABLE_OFFERS_MAP
-import json
+from constants import OFFER_BASE_URL, OFFER_INDEX_ENDPOINT, AVAILABLE_OFFERS_MAP, TERMS_DATABASE_FILE_NAME, PRODUCTS_DATABASE_FILE_NAME
 import os
 from cache import maybe_read_from_cache, maybe_write_to_cache, cache_path
 from query_db import populate_products_database, populate_terms_db
+
 
 session = requests.Session()
 session.mount('https://', HTTPAdapter(max_retries=5))
@@ -50,7 +50,8 @@ def _fetch_offer(offer_name, region=None, version='current'):
     region_text = ''
     if region is not None:
         region_text = f'_{region}'
-    cache_key = '{}_offer_{}{}.json'.format(service_short_name, version, region_text)
+    cache_key = '{}_offer_{}{}.json'.format(
+        service_short_name, version, region_text)
     offer = maybe_read_from_cache(cache_key, False)
     if offer == 'exists':
         return
@@ -79,18 +80,23 @@ def _fetch_offer(offer_name, region=None, version='current'):
             f.write(chunk)
 
 
-def create_update_databases():
+def get_local_offers(region=None):  # type (str) -> None
     for offer in AVAILABLE_OFFERS_MAP:
         print(f'Retrieving offer {offer}')
-        _fetch_offer(offer)
+        _fetch_offer(offer, region)
 
     offer_files = os.listdir(offer_dir)
-    for of in offer_files:
-        if not of.endswith('.json'):
-            continue
-        service = of.split('_')[0]
-        file_path = os.path.join(offer_dir, of)
-        print(f'populating products for {of}')
-        populate_products_database(service, src_file_path=file_path, dest_file_path='products.db')
-        print(f'populating terms for {of}')
-        populate_terms_db(service, src_file_path=file_path, dest_file_path='terms.db')
+    return offer_files
+
+
+def create_update_databases(offer_file):  # type (str) -> None
+    if not offer_file.endswith('.json'):
+        return
+    service = offer_file.split('_')[0]
+    file_path = os.path.join(offer_dir, offer_file)
+    print(f'populating products for {offer_file}')
+    populate_products_database(
+        service, src_file_path=file_path, dest_file_path=PRODUCTS_DATABASE_FILE_NAME)
+    print(f'populating terms for {offer_file}')
+    populate_terms_db(service, src_file_path=file_path,
+                      dest_file_path=TERMS_DATABASE_FILE_NAME)
