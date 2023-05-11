@@ -98,6 +98,10 @@ class main:
                 attr_name = f'{prefix}regionCode'
             elif attr_name.startswith(prefix):
                 attr_name = attr_name.lower()
+            elif attr_name == 'storage-size-gb' and attr_value == 'Storage':
+                # storage-size is only used for calculating the costs
+                attributes.pop('storage-size-gb')
+                continue
             elif attr_name != "index" and attr_name != "sku" and attr_name != "productfamily":
                 # add 'attributes_' before the column name
                 attr_name = f'{prefix}{attr_name}'
