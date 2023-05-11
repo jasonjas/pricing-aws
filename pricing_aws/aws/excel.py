@@ -17,7 +17,8 @@ def process_excel_doc(input_file_name, output_file_name):
             attrs = name.to_dict()
             multiplier = HOURS_IN_MONTH
             if 'storage-size-gb' in attrs.keys():
-                multiplier = attrs['storage-size-gb']
+                if not attrs['storage-size-gb'] == '' and not attrs['storage-size-gb'] == None:
+                    multiplier = attrs['storage-size-gb']
                 attrs.pop('storage-size-gb', None)
             cost = sku.get_pricing(attributes=attrs)
             all_costs[index] = float(cost) * float(multiplier)
