@@ -51,3 +51,13 @@ def rds_default_attributes(): # type: () -> Dict[str,str]
         'attributes_deploymentoption': 'Single-AZ',
         'attributes_databaseedition': 'Standard',
     }
+
+@implements("rds_data_default_attributes")
+def rds_data_default_attributes(): # type: () -> Dict[str,str]
+    return {
+        'attributes_databaseengine': 'SQL Server',
+        'attributes_storageMedia': 'SSD',
+        'attributes_deploymentoption': 'Single-AZ',
+        'attributes_usagetype': 'RDS:GP3-Storage',
+        'attributes_volumetype': 'General Purpose-GP3'
+    }

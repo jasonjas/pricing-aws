@@ -44,7 +44,7 @@ AVAILABLE_OFFERS_MAP = {
 RESOURCE_TYPES_MAPPING = {
     'ec2': 'Compute Instance',
     'rds': 'Database Instance',
-    'rds-data': 'Database Storage',
+    'rds_data': 'Database Storage',
     'ebs': 'Storage',
     'snapshot': 'Storage Snapshot',
     's3': 'Storage',
@@ -55,7 +55,7 @@ RESOURCE_TYPES_MAPPING = {
 DB_NAME_MAPPING = {
     'ec2': 'ec2',
     'rds': 'rds',
-    'rds-data': 'rds',
+    'rds_data': 'rds',
     'ebs': 'ec2',
     'snapshot': 'ec2',
     's3': 's3',
