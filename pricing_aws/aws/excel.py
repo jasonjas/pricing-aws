@@ -15,12 +15,12 @@ def process_excel_doc(input_file_name, output_file_name):
         # iterate the rows and update cost
         for index, name in doc[sheet].iterrows():
             attrs = name.to_dict()
-            attrs.pop('storage-size-gb')
-            cost = sku.get_pricing(attributes=attrs)
+            multiplier = 1
             if 'storage-size-gb' in attrs.keys():
-                all_costs[index] = (float(cost) * HOURS_IN_MONTH) * attrs['storage-size-gb']
-            else:
-                all_costs[index] = float(cost) * HOURS_IN_MONTH
+                multiplier = attrs['storage-size-gb']
+                attrs.pop('storage-size-gb', None)
+            cost = sku.get_pricing(attributes=attrs)
+            all_costs[index] = (float(cost) * HOURS_IN_MONTH) * multiplier
         doc[sheet]['monthly_cost'] = all_costs
 
         # output to excel
