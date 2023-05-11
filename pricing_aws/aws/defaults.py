@@ -59,5 +59,5 @@ def rds_data_default_attributes(): # type: () -> Dict[str,str]
         'attributes_storageMedia': 'SSD',
         'attributes_deploymentoption': 'Single-AZ',
         'attributes_usagetype': 'RDS:GP3-Storage',
-        'attributes_volumetype': 'General Purpose-GP3'
+        'attributes_volumetype': 'General Purpose (SSD)'
     }
