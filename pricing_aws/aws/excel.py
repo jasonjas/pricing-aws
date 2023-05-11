@@ -2,8 +2,10 @@ import pandas as pd
 import search_skus
 from constants import HOURS_IN_MONTH
 
+
 def process_excel_doc(input_file_name, output_file_name):
-    doc = pd.read_excel(input_file_name, keep_default_na=False, sheet_name=None)
+    doc = pd.read_excel(
+        input_file_name, keep_default_na=False, sheet_name=None)
     sku = search_skus.main()
 
     for sheet in doc:

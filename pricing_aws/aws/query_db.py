@@ -3,6 +3,7 @@ import pandas as pd
 from typing import Dict
 from constants import PRODUCTS_DATABASE_FILE_NAME
 
+
 def populate_products_database(table_name, json_index='products', src_file_path='index-full.json', dest_file_path='products.db'):
     # type: (str, str, str, str) -> None
     """Create database from pricing API index data
@@ -146,6 +147,3 @@ def get_table_info(db_file, table_name='products'):
     tables = cur.execute(f"PRAGMA table_info({table_name});")
     cur.close()
     return tables
-
-# populate_products_database('ec2', dest_file_path='products.db')
-# populate_terms_db('ec2')

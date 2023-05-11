@@ -1,6 +1,7 @@
 from typing import Dict  # noqa
 import os
 
+
 class Enum(object):
     """Very simple string enumeration implementation.
 

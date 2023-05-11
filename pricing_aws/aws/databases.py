@@ -31,6 +31,7 @@ class GetOffers():
     """
     Put and get available offer lists in the django DB
     """
+
     def __init__(self) -> None:
         pass
 

@@ -20,7 +20,7 @@ def get_defaults(offer_name):  # type: (str) -> str
 
 
 @implements("ec2_default_attributes")
-def ec2_default_attributes(): # type: () -> Dict[str,str]
+def ec2_default_attributes():  # type: () -> Dict[str,str]
     return {
         'attributes_operatingsystem': 'RHEL',
         'attributes_tenancy': 'Shared',
@@ -30,20 +30,23 @@ def ec2_default_attributes(): # type: () -> Dict[str,str]
         'attributes_marketoption': 'OnDemand'
     }
 
+
 @implements("ebs_default_attributes")
-def ebs_default_attributes(): # type: () -> Dict[str,str]
+def ebs_default_attributes():  # type: () -> Dict[str,str]
     return {
         'attributes_volumeapiname': 'gp3'
     }
 
+
 @implements("s3_default_attributes")
-def s3_default_attributes(): # type: () -> Dict[str,str]
+def s3_default_attributes():  # type: () -> Dict[str,str]
     return {
         'attributes_storageclass': 'General Purpose'
     }
 
+
 @implements("rds_default_attributes")
-def rds_default_attributes(): # type: () -> Dict[str,str]
+def rds_default_attributes():  # type: () -> Dict[str,str]
     return {
         'attributes_instancetype': 'db.r5.4xlarge',
         'attributes_databaseengine': 'SQL Server',
@@ -52,8 +55,9 @@ def rds_default_attributes(): # type: () -> Dict[str,str]
         'attributes_databaseedition': 'Standard',
     }
 
+
 @implements("rds_data_default_attributes")
-def rds_data_default_attributes(): # type: () -> Dict[str,str]
+def rds_data_default_attributes():  # type: () -> Dict[str,str]
     return {
         'attributes_databaseengine': 'SQL Server',
         'attributes_storageMedia': 'SSD',
