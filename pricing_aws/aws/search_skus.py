@@ -25,7 +25,7 @@ class main:
         self.default_resource_type = 'ec2'
 
     # type: (str, str, Dict[str, str]) -> Set[str]
-    def search_products(self, database, attributes):
+    def search_products(self, database, attributes, product_type):
         """Search for all products matching the given attributes.
 
         args:
@@ -35,7 +35,7 @@ class main:
         return: a set of matching SKUs
         """
         attributes = self._pythonify_attributes(attributes)
-        all_attrs = self.check_defaults(attributes)
+        all_attrs = self.check_defaults(attributes, product_type)
         query = query_db.build_query(database, all_attrs, 'sku')
         result = query_db.query_db(query, db_file_name=PRODUCTS_DATABASE_FILE_NAME)
         return result
@@ -56,7 +56,7 @@ class main:
         database_name = DB_NAME_MAPPING[product_type]
         attributes = self._pythonify_attributes(attributes)
         all_attrs = self.check_defaults(attributes, product_type)
-        sku = self.search_products(database_name, all_attrs)
+        sku = self.search_products(database_name, all_attrs, product_type)
         if len(sku) != 1:
             raise ValueError(f"Only 1 sku can be used to query the DB, received {len(sku)}")
         terms_attrs['sku'] = sku[0]
