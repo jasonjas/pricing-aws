@@ -25,7 +25,7 @@ class main:
         self.default_resource_type = 'ec2'
 
     # type: (str, str, Dict[str, str]) -> Set[str]
-    def search_products(self, database, attributes):
+    def search_products(self, database, attributes, product_type):
         """Search for all products matching the given attributes.
 
         args:
@@ -35,7 +35,7 @@ class main:
         return: a set of matching SKUs
         """
         attributes = self._pythonify_attributes(attributes)
-        all_attrs = self.check_defaults(attributes)
+        all_attrs = self.check_defaults(attributes, product_type)
         query = query_db.build_query(database, all_attrs, 'sku')
         result = query_db.query_db(query, db_file_name=PRODUCTS_DATABASE_FILE_NAME)
         return result
@@ -52,10 +52,11 @@ class main:
         return: pricing information
         """
         terms_attrs = {}
-        database_name = DB_NAME_MAPPING[attributes['type']]
+        product_type = attributes['type']
+        database_name = DB_NAME_MAPPING[product_type]
         attributes = self._pythonify_attributes(attributes)
-        all_attrs = self.check_defaults(attributes)
-        sku = self.search_products(database_name, all_attrs)
+        all_attrs = self.check_defaults(attributes, product_type)
+        sku = self.search_products(database_name, all_attrs, product_type)
         if len(sku) != 1:
             raise ValueError(f"Only 1 sku can be used to query the DB, received {len(sku)}")
         terms_attrs['sku'] = sku[0]
@@ -64,7 +65,7 @@ class main:
         return result[0]
 
 
-    def check_defaults(self, attributes): # type: (Dict[str, str]) -> Dict[str, str]
+    def check_defaults(self, attributes, product_type): # type: (Dict[str, str], str) -> Dict[str, str]
         """Check defined attributes and add any default attributes that are required but do not exist in the request
 
         return: Dictionary of attributes and their values
@@ -73,8 +74,8 @@ class main:
         if 'productfamily' in attributes.keys():
             productFamily = self._normalize_resource_type(attributes['productfamily'])
             # in a very complicated way, get the original type from the resource_types_Mapping dictionary
-            type = list(RESOURCE_TYPES_MAPPING.keys())[list(RESOURCE_TYPES_MAPPING.values()).index(productFamily)]
-            default_attrs = defaults.get_defaults(f'{type}_default_attributes')()
+            # type = list(RESOURCE_TYPES_MAPPING.keys())[list(RESOURCE_TYPES_MAPPING.values()).index(productFamily)]
+            default_attrs = defaults.get_defaults(f'{product_type}_default_attributes')()
         for i in default_attrs.keys():
             if i not in attributes.keys():
                 attributes[i] = default_attrs[i]

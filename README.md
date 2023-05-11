@@ -13,9 +13,11 @@ Run the following commands to populate the django database
 
 ```
 python manage.py migrate --run-syncdb
-python manage.py makemigrations website
-python manage.py migrate website
+python manage.py makemigrations pricing_aws
+python manage.py migrate pricing_aws
 ```
 
 Run the following command to start Django
-`pyt .\manage.py runserver`
+`python .\manage.py runserver`
+
+View the example input files in the `pricing_aws/example_docs` folder

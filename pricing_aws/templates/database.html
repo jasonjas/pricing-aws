@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Update databases</title>
+</head>
+
+<body>
+    <p>{{ message }}</p>
+    <!-- Upload form. Note enctype attribute! -->
+    <form action="{% url "update-prices" %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <p><input type="submit" value="Update Databases" /></p>
+    </form>
+    {% block statuscontent %}
+    <p>{{ status }}</p>
+    {% endblock %}
+</body>
+
+</html>

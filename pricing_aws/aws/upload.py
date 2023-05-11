@@ -46,8 +46,6 @@ class PurgeStaleDocuments():
                 files = os.listdir(files_dir)
                 print(objects)
                 a = objects.delete()
-                with open(os.path.join('c:\\', 'temp', 'test2.txt'), 'w') as wr:
-                    wr.write(str(objects))
                 for file in files:
                     if file != ".keep":
                         os.remove(os.path.join(files_dir, file))
