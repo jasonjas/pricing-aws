@@ -15,6 +15,7 @@ def process_excel_doc(input_file_name, output_file_name):
         # iterate the rows and update cost
         for index, name in doc[sheet].iterrows():
             attrs = name.to_dict()
+            attrs.pop('storage-size-gb')
             cost = sku.get_pricing(attributes=attrs)
             if 'storage-size-gb' in attrs.keys():
                 all_costs[index] = (float(cost) * HOURS_IN_MONTH) * attrs['storage-size-gb']
