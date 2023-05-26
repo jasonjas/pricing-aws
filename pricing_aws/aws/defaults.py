@@ -65,3 +65,18 @@ def rds_data_default_attributes():  # type: () -> Dict[str,str]
         'attributes_usagetype': 'RDS:GP3-Storage',
         'attributes_volumetype': 'General Purpose (SSD)'
     }
+
+@implements("ebs_snapshot_default_attributes")
+def ebs_snapshot_default_attributes(): # type: () -> Dict[str,str]
+   return {
+        'attributes_usagetype': 'EBS:SnapshotUsage'
+    }
+
+
+@implements("rds_snapshot_default_attributes")
+def rds_snapshot_default_attributes(): # type: () -> Dict[str,str]
+   return {
+        'attributes_databaseengine': 'any',
+        'attributes_databaseedition': 'any',
+        'attributes_usagetype': 'RDSCustom:ChargedBackupUsage'
+    }
