@@ -76,7 +76,7 @@ def ebs_snapshot_default_attributes(): # type: () -> Dict[str,str]
 @implements("rds_snapshot_default_attributes")
 def rds_snapshot_default_attributes(): # type: () -> Dict[str,str]
    return {
-        'attributes_databaseengine': 'any',
-        'attributes_databaseedition': 'any',
+        'attributes_databaseengine': 'Any',
+        'attributes_databaseedition': 'Any',
         'attributes_usagetype': 'RDSCustom:ChargedBackupUsage'
     }
