@@ -47,7 +47,8 @@ RESOURCE_TYPES_MAPPING = {
     'rds': 'Database Instance',
     'rds_data': 'Database Storage',
     'ebs': 'Storage',
-    'snapshot': 'Storage Snapshot',
+    'ebs_snapshot': 'Storage Snapshot',
+    'rds_snapshot': 'Storage Snapshot',
     's3': 'Storage',
     'vpc': 'AmazonVPC',
     'lambda': 'Serverless'
@@ -57,8 +58,9 @@ DB_NAME_MAPPING = {
     'ec2': 'ec2',
     'rds': 'rds',
     'rds_data': 'rds',
+    'rds_snapshot': 'rds',
     'ebs': 'ec2',
-    'snapshot': 'ec2',
+    'ebs_snapshot': 'ec2',
     's3': 's3',
     'vpc': 'vpc',
     'lambda': 'lambda'
