@@ -2,12 +2,13 @@ from typing import Dict, Set
 import boto3
 import json
 import datetime
+import requests
 
 pricing = boto3.client('pricing')
 
 
-def get_services(output_filename='services.json'):
-    # type: (str) -> None
+def get_services(output_filename='services.json', replace_file=False):
+    # type: (str, bool) -> None
     """
     Fetches AWS services and their attribute names, then saves the data to a JSON file.
 
@@ -15,6 +16,8 @@ def get_services(output_filename='services.json'):
     :type output_filename: str
     """
     all_services = {}
+    if not replace_file:
+        pass
 
     services = pricing.describe_services()
     while True:
@@ -27,23 +30,29 @@ def get_services(output_filename='services.json'):
     with open(output_filename, 'w') as json_file:
         json.dump(all_services, json_file, indent=4)
 
-def get_price_list(service_name, region='us-east-1'):
-    # type: (str, str) -> None
+def get_price_list(service_name, region='us-east-1', replace_file=False, pricing_filename=None):
+    # type: (str, str, bool, str) -> None
     """
     Get the URL for the price list
     """
+    if not replace_file:
+        pass
+
+    if pricing_filename == None:
+        pricing_filename = f'{service_name}.json'
     price_list = pricing.list_price_lists(
         ServiceCode=service_name,
         RegionCode=region,
         EffectiveDate=datetime.datetime.today(),
         CurrencyCode='USD'
     )
-    print(json.dumps(price_list, indent=4))
     file_url = pricing.get_price_list_file_url(
         PriceListArn=price_list['PriceLists'][0]['PriceListArn'],
         FileFormat='json'
-    )
-    print(file_url)
+    ).get('Url')
+    with open(pricing_filename, 'wb') as pfw:
+        for chunk in requests.get(file_url, stream=True).iter_content(chunk_size=128):
+            pfw.write(chunk)
 
 
 def get_products(service_name, filters=[]):
@@ -105,13 +114,21 @@ Filters = [
     {'Type': 'TERM_MATCH','Field': 'instanceType','Value': 'm5.large'},
     {'Type': 'TERM_MATCH','Field': 'regionCode','Value': 'us-east-1'},
     {'Type': 'TERM_MATCH','Field': 'capacitystatus','Value': 'Used'},
-    {'Type': 'TERM_MATCH','Field': 'productFamily','Value': 'Dedicated Host'},
+    {'Type': 'TERM_MATCH','Field': 'productFamily','Value': 'Compute Instance'},
     {'Type': 'TERM_MATCH','Field': 'operatingSystem','Value': 'RHEL'},
+    {'Type': 'TERM_MATCH','Field': 'preInstalledSw','Value': 'NA'},
 ]
 
 Filters2 = [
     {'Type': 'TERM_MATCH', 'Field': 'productFamily', 'Value': 'IP Address'}
 ]
 
-# get_price_list('AmazonEC2')
-get_products('AmazonEC2', Filters2)
+get_products('AmazonEC2', Filters)
+
+# service = 'AmazonRDS'
+# get_price_list(service)
+# with open(f'{service}.json', 'r') as js:
+#     data = json.load(js)
+
+# for d in data['terms']:
+#     print(d)
