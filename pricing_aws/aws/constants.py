@@ -34,11 +34,22 @@ OFFER_BASE_URL = 'https://pricing.us-east-1.amazonaws.com'
 OFFER_INDEX_ENDPOINT = '/offers/v1.0/aws/index.json'
 
 AVAILABLE_OFFERS_MAP = {
-    'AmazonS3': 's3',
-    'AmazonEC2': 'ec2',
-    'AmazonRDS': 'rds',
-    'AWSLambda': 'lambda',
-    'AmazonVPC': 'vpc'
+    's3': 'AmazonS3',
+    'ec2': 'AmazonEC2',
+    'ebs': 'AmazonEC2',
+    'rds_data': 'AmazonRDS',
+    'ebs_snapshot': 'AmazonEC2',
+    'rds_snapshot': 'AmazonEC2',
+    'rds': 'AmazonRDS',
+    'lambda': 'AWSLambda',
+    'vpc': 'AmazonVPC',
+    'cloudfront': 'AmazonCloudFront',
+    'cloudwatch': 'AmazonCloudWatch',
+    'ecr': 'AmazonECR',
+    'eks': 'AmazonEKS',
+    'efs': 'AmazonEFS',
+    'redshift': 'AmazonRedshift',
+    'sagemaker': 'AmazonSageMaker'
 }
 
 # these values match up with the 'productfamily' value
@@ -52,18 +63,6 @@ RESOURCE_TYPES_MAPPING = {
     's3': 'Storage',
     'vpc': 'AmazonVPC',
     'lambda': 'Serverless'
-}
-
-DB_NAME_MAPPING = {
-    'ec2': 'ec2',
-    'rds': 'rds',
-    'rds_data': 'rds',
-    'rds_snapshot': 'rds',
-    'ebs': 'ec2',
-    'ebs_snapshot': 'ec2',
-    's3': 's3',
-    'vpc': 'vpc',
-    'lambda': 'lambda'
 }
 
 # noqa - Taken from: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html

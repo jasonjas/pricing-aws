@@ -10,12 +10,27 @@ logger.addHandler(ch)
 
 
 def get_file_data(service_file):
+    """
+    Get file contents and return information
+    """
     with open(service_file, 'r') as sf:
         return json.load(sf)
 
 
 def get_service_code(service_file, return_all=True, type=None):
     # type: (str, bool, str) -> str
+    """
+    Get service information from the API and return all data or only portions of the data
+
+    :param service_file: Location of service file containing the services list
+    :type service_file: str
+
+    :param return_all: Whether to return all services or a specific service
+    :type service_file: bool
+
+    :param type: if return_all is False, provide the specific service to return info for
+    :type service_file: str
+    """
 
     json_data = get_file_data(service_file)
     # user lowercase for case insensitive checking
@@ -39,7 +54,20 @@ def get_service_code(service_file, return_all=True, type=None):
 
 
 def verify_attribute(service_file, type, attribute):
-    # type: (str, str, str) -> list
+    # type: (str, str, str) -> str
+    """
+    Verify an attribute is used in a service code and if so, return the correct casing
+    
+    :param service_file: Location of service file containing the services list
+    :type service_file: str
+
+    :param type: The service code the attribute is used for
+    :type service_file: str
+
+    :param attribute: The attribute name to verify
+    :type service_file: str
+    """
+
     json_data = get_file_data(service_file)
     offer = get_service_code(service_file, False, type)
     attributes = json_data[offer]
