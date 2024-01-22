@@ -1,5 +1,7 @@
 import json
 from constants import AVAILABLE_OFFERS_MAP
+from pathlib import Path
+import query_api
 
 import logging
 logger = logging.getLogger(__name__)
@@ -9,10 +11,14 @@ ch.setLevel(logging.DEBUG)
 logger.addHandler(ch)
 
 
-def get_file_data(service_file):
+def get_file_data(service_code, region='us-east-1'):
     """
     Get file contents and return information
     """
+    service_file = f'{service_code}.json'
+    path_file = Path("/path/to/file")
+    if not path_file.is_file():
+        query_api.get_price_list(service_code, region, replace_file=True)
     with open(service_file, 'r') as sf:
         return json.load(sf)
 
@@ -78,4 +84,5 @@ def verify_attribute(service_file, type, attribute):
     raise ValueError(f'Attribute name {attribute} not available for service {type}\nAvailable Attributes:\n\n{str(attributes)}')
 
 # print(get_service_code('services.json', False, 'amazons3'))
-print(verify_attribute('services.json', 'ec2', 'volumetype'))
+# print(verify_attribute('services.json', 'ec2', 'volumetype'))
+# get_file_data('AmazonS3', 'us-gov-west-1')

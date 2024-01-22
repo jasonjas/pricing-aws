@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Set, Type
+from typing import Dict, Optional, Set
 import logging
 import query_prices
 import defaults
@@ -7,10 +7,7 @@ import query_api
 from constants import (
     REGION_SHORTS,
     RESOURCE_TYPES_MAPPING,
-    PRODUCTS_DATABASE_FILE_NAME,
-    TERMS_DATABASE_FILE_NAME,
-    AVAILABLE_OFFERS_MAP,
-    DB_NAME_MAPPING
+    AVAILABLE_OFFERS_MAP
 )
 
 OFFER_CLASS_MAP = {}
@@ -27,7 +24,7 @@ class main:
         self.default_region = 'us-east-1'
         self.default_resource_type = 'amazonec2'
 
-    def search_products(self, service, attributes):
+    def search_products(self, service_name, attributes):
         # type: (str, Dict[str, str]) -> Set[str]
         """Search for all products matching the given attributes.
 
@@ -38,8 +35,6 @@ class main:
         return: a set of matching SKUs
         """
         formatted_attributes = {}
-        service_name = query_services.get_service_code(
-            'services.json', False, service)
         new_attributes = self._pythonify_attributes(attributes)
         for attr in new_attributes:
             attr_name = query_services.verify_attribute(
@@ -49,11 +44,11 @@ class main:
         final_attributes = self.check_defaults(
             formatted_attributes, service_name)
         filter_syntax = query_api.build_filter(final_attributes)
-        query = query_api.get_products(service_name, filter_syntax)
-        return query
+        results = query_api.get_products(service_name, filter_syntax)
+        return results
 
-    def get_pricing(self, attributes):
-        # type: (Dict[str, str]) -> Set[str]
+    def get_pricing(self, attributes, terms='OnDemand', region='us-east-1'):
+        # type: (Dict[str, str], str, str) -> Set[str]
         """Search for all SKUs matching the given attributes.
 
         args:
@@ -62,16 +57,15 @@ class main:
 
         return: pricing information
         """
-        terms_attrs = {}
-        # new_attributes = self._pythonify_attributes(attributes)
-        # product_type = attributes['type']
-        # all_attrs = self.check_defaults(new_attributes, product_type)
-        sku = self.search_products(attributes.get('type'), attributes)
+        service_code = query_services.get_service_code(
+            'services.json', False, )
+        sku = self.search_products(service_code, attributes)
         if len(sku) != 1:
             raise ValueError(
                 f"Only 1 sku can be used to query the API, received {len(sku)}")
 
-        hourly_cost = query_prices.get_price()
+        pricing_data = query_services.get_file_data(service_code, region)
+        hourly_cost = query_prices.get_price(pricing_data, terms)
 
         # query = query_db.build_query(database_name, terms_attrs, 'cost')
         # result = query_db.query_db(
