@@ -21,14 +21,6 @@ def get_defaults(offer_name):  # type: (str) -> str
 
 @implements("ec2_default_attributes")
 def ec2_default_attributes():  # type: () -> Dict[str,str]
-    # return {
-    #     'operatingsystem': 'RHEL',
-    #     'tenancy': 'Shared',
-    #     'licensemodel': 'No License required',
-    #     'preinstalledsw': 'NA',
-    #     'capacitystatus': 'Used',
-    #     'marketoption': 'OnDemand'
-    # }
     return {
         'operatingsystem': 'RHEL',
         'tenancy': 'Shared',

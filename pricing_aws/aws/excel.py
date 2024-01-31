@@ -22,7 +22,7 @@ def process_excel_doc(input_file_name, output_file_name):
                 if not attrs['storage-size-gb'] == '' and not attrs['storage-size-gb'] == None:
                     multiplier = attrs['storage-size-gb']
                 attrs.pop('storage-size-gb', None)
-            cost = sku.get_pricing(attributes=attrs)
+            cost = sku.get_pricing(attributes=attrs, terms='OnDemand', region='us-east-1')
             all_costs[index] = float(cost) * float(multiplier)
         doc[sheet]['monthly_cost'] = all_costs
 

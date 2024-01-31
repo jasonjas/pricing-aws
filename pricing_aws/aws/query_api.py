@@ -3,6 +3,7 @@ import boto3
 import json
 import datetime
 import requests
+from query_services import verify_attribute
 
 pricing = boto3.client('pricing')
 
@@ -30,7 +31,7 @@ def get_services(output_filename='services.json', replace_file=False):
     with open(output_filename, 'w') as json_file:
         json.dump(all_services, json_file, indent=4)
 
-def get_price_list(service_name, region='us-east-1', replace_file=False, pricing_filename=None):
+def get_price_list(service_name, region, replace_file=False, pricing_filename=None):
     # type: (str, str, bool, str) -> None
     """
     Get the URL for the price list
@@ -39,13 +40,15 @@ def get_price_list(service_name, region='us-east-1', replace_file=False, pricing
         pass
 
     if pricing_filename == None:
-        pricing_filename = f'{service_name}.json'
+        pricing_filename = f'{service_name}-{region}.json'
     price_list = pricing.list_price_lists(
         ServiceCode=service_name,
         RegionCode=region,
         EffectiveDate=datetime.datetime.today(),
         CurrencyCode='USD'
     )
+    if price_list['PriceLists'] == []:
+        raise ValueError(f'No price list found for service {service_name} in region {region}')
     file_url = pricing.get_price_list_file_url(
         PriceListArn=price_list['PriceLists'][0]['PriceListArn'],
         FileFormat='json'
@@ -100,10 +103,12 @@ def build_filter(attributes):
     """
     formatted_filter = []
     for key in attributes:
-        template = {'Type': 'TERM_MATCH',
-                    'Field': key, 'Value': attributes.get(key)}
-        formatted_filter.append(template)
         # Check if the item matches all the filter conditions
+        new_key = verify_attribute(key)
+        template = {'Type': 'TERM_MATCH',
+                    'Field': new_key, 'Value': attributes.get(key)}
+        formatted_filter.append(template)
+        
 
     return formatted_filter
 
@@ -123,7 +128,7 @@ Filters2 = [
     {'Type': 'TERM_MATCH', 'Field': 'productFamily', 'Value': 'IP Address'}
 ]
 
-get_products('AmazonEC2', Filters)
+# get_products('AmazonEC2', Filters)
 
 # service = 'AmazonRDS'
 # get_price_list(service)

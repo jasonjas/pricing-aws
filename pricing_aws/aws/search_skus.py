@@ -24,8 +24,8 @@ class main:
         self.default_region = 'us-east-1'
         self.default_resource_type = 'amazonec2'
 
-    def search_products(self, service_name, attributes):
-        # type: (str, Dict[str, str]) -> Set[str]
+    def search_products(self, service_name, region, attributes):
+        # type: (str, str, Dict[str, str]) -> Set[str]
         """Search for all products matching the given attributes.
 
         args:
