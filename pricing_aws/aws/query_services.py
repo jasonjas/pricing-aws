@@ -89,7 +89,7 @@ def verify_attribute(service_code, attribute, region):
     :rtype: str
     """
     json_data = get_file_data(service_code, region, 'service_list')
-    offer = get_service_code(service_code, False, service_code)
+    offer = get_service_code(service_code, region, False)
 
     try:
         attributes = json_data[offer]

@@ -6,6 +6,7 @@ _TERMS_TYPES = Literal["OnDemand", "Reserved"]
 # create a lambda to loop through the keys
 def v(d): return list(d.values())[0]
 
+
 def get_price(pricing_data, terms_type: _TERMS_TYPES = 'OnDemand'):
     # type: (Dict, str) -> float
     """
@@ -29,7 +30,7 @@ def get_price(pricing_data, terms_type: _TERMS_TYPES = 'OnDemand'):
 def get_terms(terms_data, years=1, offering_class='convertible', purchase_option='No Upfront'):
     # type: (Dict, int, str, str) -> float
     """
-
+    Return hourly rate for reserved instances
     """
     for idx, val in enumerate(terms_data):
         option_data = terms_data[val].get('termAttributes')
@@ -42,18 +43,20 @@ def get_terms(terms_data, years=1, offering_class='convertible', purchase_option
     return hourly_cost
 
 # def query_test():
-#     with open('ec2.json', 'r') as ro:
+#     with open('b.json', 'r') as ro:
 #         data = json.load(ro)
 
-#     od_terms = data[0].get('terms').get('Reserved')
-#     def v(d): return list(d.values())
-#     # print(v(v(od_terms)['priceDimensions'])['pricePerUnit']['USD'])
-
-#     for idx, val in enumerate(od_terms):
-#         option_data = od_terms[val].get('termAttributes')
-#         if option_data['LeaseContractLength'] == '1yr' and option_data['OfferingClass'] == 'convertible' and option_data['PurchaseOption'] == 'No Upfront':
-#             print(v(v(v(od_terms)[idx])[0])[0]['pricePerUnit']['USD'])
-            # print(json.dumps(od_terms.get(val), indent=4))
+#     od_terms = data[0].get('terms').get('OnDemand')
+#     # hourly
+#     def v(d): return list(d.values())[0]
+#     print(v(v(od_terms)['priceDimensions'])['pricePerUnit']['USD'])
+#     quit()
+    # reserved
+    # for idx, val in enumerate(od_terms):
+    #     option_data = od_terms[val].get('termAttributes')
+    #     if option_data['LeaseContractLength'] == '1yr' and option_data['OfferingClass'] == 'convertible' and option_data['PurchaseOption'] == 'No Upfront':
+    #         print(v(v(v(od_terms)[idx])[0])[0]['pricePerUnit']['USD'])
+    #         print(json.dumps(od_terms.get(val), indent=4))
 
     # print(json.dumps(v(v(od_terms)['priceDimensions'])['pricePerUnit']['USD'], indent=4))
 
@@ -61,4 +64,4 @@ def get_terms(terms_data, years=1, offering_class='convertible', purchase_option
     # print(hourly_cost)
 
 
-query_test()
+# query_test()
