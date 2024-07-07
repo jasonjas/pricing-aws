@@ -37,7 +37,7 @@ class main:
         formatted_attributes = {}
         new_attributes = self._pythonify_attributes(attributes)
         for attr in new_attributes:
-            attr_name = query_services.verify_attribute(
+            attr_name = query_api.verify_attribute(
                 'services.json', service_name, attr)
             # Get correct attribute search syntax
             formatted_attributes[attr_name] = new_attributes[attr]

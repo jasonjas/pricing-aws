@@ -1,8 +1,10 @@
 import json
 from constants import AVAILABLE_OFFERS_MAP
 from pathlib import Path
-from query_api import get_price_list, get_services
 from typing import Literal
+import datetime
+import requests
+import boto3
 
 import logging
 logger = logging.getLogger(__name__)
@@ -12,6 +14,7 @@ ch.setLevel(logging.DEBUG)
 logger.addHandler(ch)
 
 _INFO_TYPES = Literal['service_list', 'pricing_data']
+pricing = boto3.client('pricing')
 
 
 def get_file_data(service_code, region, info_type: _INFO_TYPES):
@@ -30,6 +33,57 @@ def get_file_data(service_code, region, info_type: _INFO_TYPES):
             get_services(f'services-{region}.json', replace_file=True)
     with open(service_file, 'r') as sf:
         return json.load(sf)
+    
+
+def get_price_list(service_name, region, replace_file=False, pricing_filename=None):
+    # type: (str, str, bool, str) -> None
+    """
+    Get the URL for the price list
+    """
+    if not replace_file:
+        pass
+
+    if pricing_filename == None:
+        pricing_filename = f'{service_name}-{region}.json'
+    price_list = pricing.list_price_lists(
+        ServiceCode=service_name,
+        RegionCode=region,
+        EffectiveDate=datetime.datetime.today(),
+        CurrencyCode='USD'
+    )
+    if price_list['PriceLists'] == []:
+        raise ValueError(f'No price list found for service {service_name} in region {region}')
+    file_url = pricing.get_price_list_file_url(
+        PriceListArn=price_list['PriceLists'][0]['PriceListArn'],
+        FileFormat='json'
+    ).get('Url')
+    with open(pricing_filename, 'wb') as pfw:
+        for chunk in requests.get(file_url, stream=True).iter_content(chunk_size=128):
+            pfw.write(chunk)
+    
+
+def get_services(output_filename='services.json', replace_file=False):
+    # type: (str, bool) -> None
+    """
+    Fetches AWS services and their attribute names, then saves the data to a JSON file.
+
+    :param output_filename: The name of the output JSON file.
+    :type output_filename: str
+    """
+    all_services = {}
+    if not replace_file:
+        pass
+
+    services = pricing.describe_services()
+    while True:
+        for service in services['Services']:
+            all_services[service['ServiceCode']] = service['AttributeNames']
+        if 'NextToken' not in services:
+            break
+        services = pricing.describe_services(NextToken=services['NextToken'])
+
+    with open(output_filename, 'w') as json_file:
+        json.dump(all_services, json_file, indent=4)
 
 
 def get_service_code(type, region, return_all=True):
@@ -71,39 +125,6 @@ def get_service_code(type, region, return_all=True):
     return services[idx]
 
 
-def verify_attribute(service_code, attribute, region):
-    # type: (str, str, str) -> str
-    """
-    Verify an attribute is used in a service code and if so, return the correct casing
-    
-    :param service_code: The service code the attribute is used for
-    :type service_code: str
-
-    :param attribute: The attribute name to verify
-    :type attribute: str
-
-    :param region: The region for which service data is requested
-    :type region: str
-
-    :return: Correct casing of the attribute if found
-    :rtype: str
-    """
-    json_data = get_file_data(service_code, region, 'service_list')
-    offer = get_service_code(service_code, region, False)
-
-    try:
-        attributes = json_data[offer]
-        for index, attr in enumerate(attributes):
-            if attribute.lower() == attr.lower():
-                return attributes[index]
-    except KeyError:
-        pass
-
-    available_attributes = ', '.join(attributes)
-    raise ValueError(f'Attribute name {attribute} not available for service {service_code}\nAvailable Attributes:\n\n{available_attributes}')
-
-
 # print(get_service_code('services.json', False, 'amazons3'))
-print(verify_attribute('AmazonEC2', 'voltype', 'us-east-1'))
 # get_file_data('AmazonS3', 'us-gov-west-1')
 # print(get_service_code('AmazonEC2', 'us-gov-west-1', False))
